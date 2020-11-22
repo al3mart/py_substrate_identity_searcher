@@ -24,12 +24,11 @@ matching_ids = {}
 id_dict = {account:data for account, data in id_list}
 
 def string_to_hex(text):
+    
     text_binary = text.encode(encoding='utf-8')
     text_hex = text_binary.hex()
-
-    # Information is saved in chain with the prefix '0x' in it,
-    # so lets add it to our text_hex
-    return('0x' + text_hex)
+    
+    return text_hex
 
 def find_in_id_list(target, id_dict):
 
@@ -39,20 +38,33 @@ def find_in_id_list(target, id_dict):
             matching_ids[target].append(account)
 
 def is_matching_target(target, id_data):
-    print(id_data)
+    
     for field, value in id_data.items():
+
         if value is None:
             print('{} is None'.format(value))
             continue
+
         elif target in value:
             print('Checking if {} is in {}'.format(target, value))
             print('Found in field {}!'.format(field))
             return True
+
         elif type(value) is dict:
             print('value is a dict, then, checking in {}'.format(value.values()))
-            if target in value.values():
-                print('Found in field {}!'.format(field))
-                return True
+            for val in value.values():
+                if val is None: continue
+                if target in val:
+                    print('Found in field {}!'.format(field))
+                    return True
+
+        elif type(value) is list:
+            print('value is a dict, then, checking in {}'.format(value))
+            for val in value:
+                if target in val:
+                    print('Found in field {}!'.format(field))
+                    return True
+
 
 
 target = string_to_hex(input('Input the information to be looked for in the network existing identities: '))
