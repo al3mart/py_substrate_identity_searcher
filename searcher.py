@@ -27,15 +27,21 @@ def string_to_hex(text):
     
     text_binary = text.encode(encoding='utf-8')
     text_hex = text_binary.hex()
-    
+    # Returning without 0x prefix for enabling substring search
     return text_hex
 
-def find_in_id_list(target, id_dict):
+def find_in_id_list(search_filter, target, id_dict):
 
     print('\nLooking for target: {} \n'.format(target))
     for account in id_dict.keys():
-        if is_matching_target(target, id_dict[account]['info']):
-            matching_ids[target].append(account)
+        if search_filter is None:
+            if is_matching_target(target, id_dict[account]['info']):
+                matching_ids[target].append(account)
+        else:
+            print('search is filtered by {}'.format(search_filter))
+            print('Sending data {}'.format(id_dict[account]['info'][search_filter]))
+            if is_matching_target(target, id_dict[account]['info'][search_filter]):
+                matching_ids[target].append(account)
 
 def is_matching_target(target, id_data):
     
@@ -52,6 +58,7 @@ def is_matching_target(target, id_data):
 
         elif type(value) is dict:
             print('value is a dict, then, checking in {}'.format(value.values()))
+            # Looping through is required for sebstring search
             for val in value.values():
                 if val is None: continue
                 if target in val:
@@ -60,16 +67,26 @@ def is_matching_target(target, id_data):
 
         elif type(value) is list:
             print('value is a dict, then, checking in {}'.format(value))
+            # Looping through is required for sebstring search
             for val in value:
                 if target in val:
                     print('Found in field {}!'.format(field))
                     return True
 
+def set_search_filter(target):
 
+    filtered_target = target.split(':')
+    print(filtered_target)
+    if len(filtered_target) > 1:
+        return filtered_target[0], filtered_target[1]
+    return None, target
+        
+# User input, parsing and checking for search filters
+search_filter, target = set_search_filter(input('Input the information to be looked for in the network existing identities: '))
+hex_target = string_to_hex(target)
 
-target = string_to_hex(input('Input the information to be looked for in the network existing identities: '))
 matching_ids[target] = []
 
-find_in_id_list(target, id_dict)
+find_in_id_list(search_filter, hex_target, id_dict)
 
-print(matching_ids)                
+print(matching_ids)
