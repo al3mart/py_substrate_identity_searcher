@@ -17,7 +17,7 @@ Use of virtualenv is recomended
 
 ```
 pip install virtualenv
-virtualenv ./
+virtualenv .
 pip install flask
 pip install substrate-interface
 export FLASK_APP=searcher.py
