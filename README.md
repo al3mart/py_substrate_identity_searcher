@@ -8,6 +8,25 @@ The identities pallet allows an account owner to register real-world information
 
 Please read more about substrate based identities at the [official wiki]()https://wiki.polkadot.network/docs/en/learn-identity
 
+## Installation
+```
+git clone https://github.com/al3mart/substrate_identity_searcher.git
+cd substrate_identity_searcher
+```
+Use of virtualenv is recomended
+
+```
+pip install virtualenv
+virtualenv ./
+pip install flask
+pip install substrate-interface
+export FLASK_APP=searcher.py
+```
+
+If we want to activate flask's development mode and have debug: `export FLASK_ENV=development`
+
+And finally run it with a simple `flask run` 
+
 ### Functionality
 
 This searcher is developed in a fairly simple API way using Flask, and will wait for GET requests at path `/search/<target>`, being `target` a string that will be looked for within identities metadata.
@@ -40,26 +59,6 @@ Given the magnitude of the problem, and being metadata whatever information owen
 ## Dependencies
 - [Flask](https://palletsprojects.com/p/flask/)
 - [substrate-interface](https://github.com/polkascan/py-substrate-interface) (not in use right now)
-
-## Installing
-```
-git clone https://github.com/al3mart/substrate_identity_searcher.git
-cd substrate_identity_searcher
-```
-Use of virtualenv is recomended
-
-```
-pip install virtualenv
-virtualenv ./
-pip install flask
-pip install substrate-interface
-export FLASK_APP=searcher.py
-```
-
-If we want to activate flask's development mode and have debug: `export FLASK_ENV=development`
-
-And finally run it with a simple `flask run` 
-
 
 ## Future Work
 
