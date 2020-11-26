@@ -73,7 +73,6 @@ def is_matching_target(target, id_data):
             continue
 
         elif target in value:
-            app.logger.debug('Found in field {}!'.format(field))
             return True
 
         elif type(value) is dict:
@@ -113,7 +112,6 @@ def set_search_filter(target):
 
 def search(target):
     """ Entry point, renders a simple html with search result """
-    print(target)
     
     cache = {}
         
@@ -122,13 +120,11 @@ def search(target):
     
     try:
         # Try reading cache
-        print('>> Leyendo fichero')
         with open(options.cache_file, 'r') as f:
             cache = json.loads(f.read())
 
     except FileNotFoundError:
         # Create cache file        
-        print('>> Escribiendo fichero')
         cache['hash'] = id_list_hash
         cache[target] = find_in_id_list(target, id_list)[target]
         with open(options.cache_file, 'w') as f:
