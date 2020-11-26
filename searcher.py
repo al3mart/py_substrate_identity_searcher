@@ -1,24 +1,25 @@
-from flask import Flask
-from flask import render_template
-from identities import id_list
+from optparse import OptionParser
+from substrateinterface import SubstrateInterface
+import json
 
-global matching_ids
-global id_dict 
+""" Setting script usage, options and args parsing """
 
+usage = "usage: %prog [--cache, --endpoint] target"
+parser = OptionParser(usage)
+
+parser.add_option('-c', '--cache', dest='cache_file', default='./.identites_cache.json', help='file to use as cache file, uses .json files. Default is ./.identities_cache.json', metavar='CACHE')
+parser.add_option('-e', '--endpoint', dest='endpoint', default='http://127.0.0.1:9933', help='endpoint of network node you want to connect to, and retrieve identities from. Default is http://127.0.0.1:9933')
+
+(options, args) = parser.parse_args()
+
+if len(args) != 1:
+        parser.error("missing target to search for \n")
+
+""" Initializing node connection & data structures """
+substrate = SubstrateInterface(url=options.endpoint)
 matching_ids = {}
-id_dict = {account:data for account, data in id_list}
 
-app = Flask(__name__)
-
-def string_to_hex(text):
-    """ Transforms given string to his hexiadecimal representation """
-
-    text_binary = text.encode(encoding='utf-8')
-    text_hex = text_binary.hex()
-    # Returning without 0x prefix for enabling substring search
-    return text_hex
-
-def find_in_id_list(target, id_dict):
+def find_in_id_list(target, id_list):
     """ Sets data collection where target is to be looked for
         
         Parameters
@@ -26,26 +27,33 @@ def find_in_id_list(target, id_dict):
         target: str
             String to be found in id_dict
 
-        id_dict: dict
+        id_list: list
             Data collection that will be filtered or used as source to
             look for target
-    """
 
+        Returns
+        -------
+        matching_ids: dict
+            dict of ids matching the target
+    """
+    matching_ids[target] = [] 
+
+    id_dict = {account:data for account, data in id_list}
     search_filter, target = set_search_filter(target)
 
-    app.logger.debug('Looking for target: {}'.format(string_to_hex(target)))
     for account in id_dict.keys():
         # If filter is provided search is restricted to given identity field
         if search_filter is None:
-            if is_matching_target(string_to_hex(target), id_dict[account]['info']):
+            if is_matching_target(target, id_dict[account]['info']):
                 matching_ids[target].append(account)
         else:
-            app.logger.debug('Search is filtered by {}'.format(search_filter))
-            if is_matching_target(string_to_hex(target), id_dict[account]['info'][search_filter]):
+            if is_matching_target(target, id_dict[account]['info'][search_filter]):
                 matching_ids[search_filter+':'+target].append(account)
 
+    return matching_ids
+
 def is_matching_target(target, id_data):
-     """ Checks if target is contained in given id_data
+    """ Checks if target is contained in given id_data
 
          Parameters
          ----------
@@ -58,35 +66,27 @@ def is_matching_target(target, id_data):
          Returns
          -------
             <True, False>: depending if target is found
-        
-     """
+    """
 
-    for field, value in id_data.items():
-
+    for field, value in id_data.items():        
         if value is None:
-            app.logger.debug('{} is None'.format(value))
             continue
 
         elif target in value:
-            app.logger.debug('Checking if {} is in {}'.format(target, value))
             app.logger.debug('Found in field {}!'.format(field))
             return True
 
         elif type(value) is dict:
-            app.logger.debug('Value is a dict, then, checking in {}'.format(value.values()))
             # Looping through is required for sebstring search
             for val in value.values():
                 if val is None: continue
                 if target in val:
-                    app.logger.debug('Found in field {}!'.format(field))
                     return True
 
         elif type(value) is list:
-            app.logger.debug('Value is a list, then, checking in {}'.format(value))
             # Looping through is required for sebstring search
             for val in value:
                 if target in val:
-                    app.logger.debug('Found in field {}!'.format(field))
                     return True
 
 def set_search_filter(target):
@@ -107,25 +107,45 @@ def set_search_filter(target):
     """
 
     filtered_target = target.split(':')
-    app.logger.debug(filtered_target)
     if len(filtered_target) > 1:
         return filtered_target[0], filtered_target[1]
     return None, target
 
-
-@app.route('/search/<string:target>', methods=['GET'])
 def search(target):
     """ Entry point, renders a simple html with search result """
+    print(target)
     
-    # Check cache is case request has been already done
-    if target in matching_ids:
-        app.logger.debug('Returning from cache')
-        return render_template('search.html', account_list=matching_ids[target])
+    cache = {}
+        
+    id_list = substrate.iterate_map(module='Identity', storage_function='IdentityOf')
+    id_list_hash = hash(str(id_list))
     
-    matching_ids[target] = []
+    try:
+        # Try reading cache
+        print('>> Leyendo fichero')
+        with open(options.cache_file, 'r') as f:
+            cache = json.loads(f.read())
 
-    # Look for identites containing target metadata
-    find_in_id_list(target, id_dict)
+    except FileNotFoundError:
+        # Create cache file        
+        print('>> Escribiendo fichero')
+        cache['hash'] = id_list_hash
+        cache[target] = find_in_id_list(target, id_list)[target]
+        with open(options.cache_file, 'w') as f:
+            f.write(json.dumps(cache))
 
-    app.logger.debug(matching_ids)
-    return render_template('search.html', account_list=matching_ids[target])
+    else:
+        # Check if cache is empty
+        # Check if identities on chain have been modified since the last request
+        # If so, we have to update cache, what will result in doing the full search again
+        if 'hash' not in cache or id_list_hash != cache['hash']:
+            cache['hash'] = id_list_hash
+            cache[target] = find_in_id_list(target, id_list)[target]
+            with open(options.cache_file, 'w') as f:
+                f.write(json.dumps(cache))
+    
+    finally:
+        # returning identities
+        print(cache[target])
+
+search(args[0])
