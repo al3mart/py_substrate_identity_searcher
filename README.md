@@ -64,7 +64,7 @@ Given the magnitude of the problem, and being metadata whatever information owne
 - Persistent cache system to speed up repetitive requests.
 
 ## Dependencies
-- [substrate-interface](https://github.com/polkascan/py-substrate-interface) (not in use right now)
+- [substrate-interface](https://github.com/polkascan/py-substrate-interface)
 
 ## Possible upgrades & ongoing work
 
