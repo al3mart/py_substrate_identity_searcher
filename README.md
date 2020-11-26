@@ -18,6 +18,7 @@ Use of virtualenv is recomended
 ```
 pip install virtualenv
 virtualenv .
+source bin/activate
 pip install substrate-interface
 ```
 
@@ -25,9 +26,17 @@ And finally run it with a simple `python ./searcher.py [options] arg`
 
 ### Functionality
 
-This searcher is developed in a fairly simple script, that will set a connection with a network node of your election, this option is provided by the `--endpoint` option, also, let the user choose a file for caching results by setting the option `--cache`. Notice, these two options have deault values, `http://127.0.0.1:9933` for the `endpoint` and `./.identities_cache.json` for the cache file.So, if user is confortable using the default values there is no need of providing these options.
+This searcher is developed in a fairly simple script, that will set a connection with a network node of your election, this node endpoint is provided by the `--endpoint` option, also, user is able to choose a file for caching results by setting the `--cache` option.
+**Default Vaulues**:
+
+- endpoint: `http://127.0.0.1:9933`
+- cache: `./.identities_cache.json`
+
+So, if user is confortable using the default values there is no need of providing these options.
 
 In the other hand, is mandatory for the user to provide `arg`, from now on `target`, being this one the string to be looked for in the identities' metadata.
+
+At any moment user can run ./python searcher.py <-h, --help> for displaying all the command information.
 
 Running this script will end up retrieving all identities that contain the given `target` at some part of their information fields.
 
