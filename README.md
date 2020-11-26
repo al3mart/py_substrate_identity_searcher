@@ -27,7 +27,8 @@ And finally run it with a simple `python ./searcher.py [options] arg`
 ### Functionality
 
 This searcher is developed in a fairly simple script, that will set a connection with a network node of your election, this node endpoint is provided by the `--endpoint` option, also, user is able to choose a file for caching results by setting the `--cache` option.
-**Default Vaulues**:
+
+**Default Values**:
 
 - endpoint: `http://127.0.0.1:9933`
 - cache: `./.identities_cache.json`
