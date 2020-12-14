@@ -18,6 +18,7 @@ if len(args) != 1:
 """ Initializing node connection & data structures """
 substrate = SubstrateInterface(url=options.endpoint)
 matching_ids = {}
+valid_filters = ('additional', 'display', 'legal', 'web', 'riot', 'email', 'pgpFingerprint', 'image', 'twitter')
 
 def find_in_id_list(target, id_list):
     """ Sets data collection where target is to be looked for
@@ -106,8 +107,19 @@ def set_search_filter(target):
     """
 
     filtered_target = target.split(':')
+    
     if len(filtered_target) > 1:
+        if filtered_target[0] not in valid_filters:
+            print('\nFilter provided is not valid. Valid filters are: \n')
+            for id_filter in valid_filters:
+                print(id_filter)
+
+            print('\nSearch will continue looking for {} in every identity field.'.format(filtered_target[1]))
+
+            return None, filtered_target[1]
+
         return filtered_target[0], filtered_target[1]
+
     return None, target
 
 def search(target):
@@ -126,7 +138,7 @@ def search(target):
     except FileNotFoundError:
         # Create cache file        
         cache['hash'] = id_list_hash
-        cache[target] = find_in_id_list(target, id_list)[target]
+        cache[list(matching_ids.keys())[0]] = find_in_id_list(target, id_list)[list(matching_ids.keys())[0]]
         with open(options.cache_file, 'w') as f:
             f.write(json.dumps(cache))
 
@@ -136,12 +148,12 @@ def search(target):
         # If so, we have to update cache, what will result in doing the full search again
         if 'hash' not in cache or id_list_hash != cache['hash']:
             cache['hash'] = id_list_hash
-            cache[target] = find_in_id_list(target, id_list)[target]
+            cache[list(matching_ids.keys())[0]] = find_in_id_list(target, id_list)[list(matching_ids.keys())[0]]
             with open(options.cache_file, 'w') as f:
                 f.write(json.dumps(cache))
     
     finally:
         # returning identities
-        print(cache[target])
+        print(cache[list(matching_ids.keys())[0]])
 
 search(args[0])

@@ -35,6 +35,8 @@ This searcher is developed in a fairly simple script, that will set a connection
 
 So, if user is confortable using the default values there is no need of providing these options.
 
+Take into account that public nodes are not exposing HTTP endpoints, so using WSS is recomended.
+
 In the other hand, is mandatory for the user to provide `arg`, from now on `target`, being this one the string to be looked for in the identities' metadata.
 
 At any moment user can run ./python searcher.py <-h, --help> for displaying all the command information.
@@ -52,7 +54,7 @@ Notice that `target` can not only contain a simple string, but also an identity 
 - image
 - twitter
 
-Filters can be express within target like this `filter:str_to_be_found`. Only accepting one field filter for the moment.
+Filters can be express within target like this `filter:str_to_be_found`. Only accepting one field filter from the list above for the moment.
 
 It is worth mentioning that when running this script, identities in the result list will not only be the ones with information that completely matches our `target`, but also identities which have information that is not exactly equals to `target`, but contains `target` at some point.
 
@@ -69,6 +71,6 @@ Given the magnitude of the problem, and being metadata whatever information owne
 
 ## Possible upgrades & ongoing work
 
-- While developing this script I have been able to get a flawless connection with the node I have been using, a local polkadot node by running the latest polkadot binary with `--dev` flag, but it has not been the same when connecting to live networks, as I have been receiving [Err(UnsafeRpcError)](https://substrate.dev/rustdocs/v2.0.0/sc_rpc_api/enum.DenyUnsafe.html), and for the time being I still don't know the cause of that denial.
+- ~~While developing this script I have been able to get a flawless connection with the node I have been using, a local polkadot node by running the latest polkadot binary with `--dev` flag, but it has not been the same when connecting to live networks, as I have been receiving [Err(UnsafeRpcError)](https://substrate.dev/rustdocs/v2.0.0/sc_rpc_api/enum.DenyUnsafe.html), and for the time being I still don't know the cause of that denial.~~
 
 - Identities request could be done in a separate thread
