@@ -1,4 +1,4 @@
-# Substrate Identity Searcher
+# py Substrate Identity Searcher
 
 Identity searcher for a Substrate-based chain with the identities pallet installed.
 
