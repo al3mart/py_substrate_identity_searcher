@@ -69,7 +69,7 @@ def is_matching_target(target, id_data):
             <True, False>: depending if target is found
     """
 
-    for field, value in id_data.items():        
+    for _, value in id_data.items():        
         if value is None:
             continue
 
@@ -124,7 +124,7 @@ def set_search_filter(target):
 
 def search(target):
     """ Entry point, renders a simple html with search result """
-    
+
     cache = {}
         
     id_list = substrate.iterate_map(module='Identity', storage_function='IdentityOf')
