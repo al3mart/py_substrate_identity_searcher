@@ -1,6 +1,6 @@
 # py Substrate Identity Searcher
 
-Identity searcher for a Substrate-based chain with the identities pallet installed.
+Identity searcher for Substrate-based chains with [identity pallet](https://substrate.dev/rustdocs/v2.0.0/pallet_identity/index.html) installed.
 
 ### Context
 
