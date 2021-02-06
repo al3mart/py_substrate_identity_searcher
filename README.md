@@ -74,3 +74,5 @@ Given the magnitude of the problem, and being metadata whatever information owne
 - ~~While developing this script I have been able to get a flawless connection with the node I have been using, a local polkadot node by running the latest polkadot binary with `--dev` flag, but it has not been the same when connecting to live networks, as I have been receiving [Err(UnsafeRpcError)](https://substrate.dev/rustdocs/v2.0.0/sc_rpc_api/enum.DenyUnsafe.html), and for the time being I still don't know the cause of that denial.~~
 
 - Identities request could be done in a separate thread
+
+- Value around sending a signed extrinsic confirming that X identities were found at certain block/timestamp/era ?
