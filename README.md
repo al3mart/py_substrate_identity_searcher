@@ -75,4 +75,4 @@ Given the magnitude of the problem, and being metadata whatever information owne
 
 - Identities request could be done in a separate thread
 
-- Value around sending a signed extrinsic confirming that X identities were found at certain block/timestamp/era ?
+- _Value around sending a signed extrinsic confirming that X identities were found at certain block/timestamp/era ?_
